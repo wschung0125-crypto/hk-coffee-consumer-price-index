@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HK Coffee Price Index</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; max-width: 800px; margin: auto; line-height: 1.6; }
+        .container { background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #4b3022; }
+        canvas { margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>☕️ HK Coffee Price Index</h1>
+        <p>Tracking the cost of a standard latte across Hong Kong. A project by a local Gen Z explorer.</p>
+        
+        <canvas id="coffeeChart"></canvas>
+    </div>
+
+    <script>
+        async function renderChart() {
+            try {
+                // 1. Fetch the data from your data.json file
+                const response = await fetch('data.json');
+                const data = await response.json();
+
+                // 2. Prepare the labels (Dates) and values (Prices)
+                const labels = data.map(entry => entry.date);
+                const prices = data.map(entry => entry.price_hkd);
+
+                // 3. Create the Chart
+                const ctx = document.getElementById('coffeeChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Avg. Latte Price (HKD)',
+                            data: prices,
+                            borderColor: '#8b5e3c',
+                            backgroundColor: 'rgba(139, 94, 60, 0.2)',
+                            borderWidth: 3,
+                            tension: 0.3, // Makes the line curvy
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                title: { display: true, text: 'Price in HKD' }
+                            },
+                            x: { title: { display: true, text: 'Month' } }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error loading the data:", error);
+                document.body.innerHTML += "<p style='color:red;'>Failed to load price data. Make sure data.json exists!</p>";
+            }
+        }
+
+        renderChart();
+    </script>
+</body>
+</html>
